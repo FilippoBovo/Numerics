@@ -1,7 +1,5 @@
 <!--- Load Prettify for Mathematica syntax highlight-->
-<link href="https://github.com/FilippoBovo/Numerics/blob/master/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="https://github.com/FilippoBovo/Numerics/blob/master/google-code-prettify/prettify.js"></script>
-<body onload="prettyPrint()">
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
 
 # Lieb-Liniger Equations
 
@@ -12,7 +10,6 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 
 - **BoundFunction:** This module takes the function f as input and as output gives the function f in the interval [a,b] and zero otherwise.
 
-	<?prettify?>
 	<pre class="prettyprint">
 	BoundFunction[f_, a_, b_] :=
 		Function[
