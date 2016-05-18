@@ -6,6 +6,11 @@ This is a repository for numerical solutions of mathematical equations:
   <img src="Resources/Fredholm2ndKind.pdf"  style="height: 40px;">
 </p>
 
+<p align="center">
+  <img src="Resources/latex-image-1.png"  style="height: 40px;">
+</p>
+
+
 To solve the Fredholm integral equation of the second kind, we define the following three functions:
 
 - **BoundFunction:** This module takes the function f as input and as output gives the function f in the interval [a,b] and zero otherwise.
