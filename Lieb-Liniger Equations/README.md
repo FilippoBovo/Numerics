@@ -1,5 +1,7 @@
 <!--- Load Prettify for Mathematica syntax highlight-->
-<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=mma"></script>
+<link href="https://github.com/FilippoBovo/Numerics/blob/master/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="https://github.com/FilippoBovo/Numerics/blob/master/google-code-prettify/prettify.js"></script>
+<body onload="prettyPrint()">
 
 # Lieb-Liniger Equations
 
