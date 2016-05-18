@@ -1,7 +1,16 @@
+<!--- Load MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
 # Lieb-Liniger Equations
 
 This is a repository for numerical solutions of mathematical equations:
 
+$$ x = y $$
 
 To solve the Fredholm integral equation of the second kind, we define the following three functions:
 
