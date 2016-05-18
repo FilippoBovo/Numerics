@@ -5,6 +5,7 @@
 
 This is a repository for numerical solutions of mathematical equations:
 
+$$ x = y $$
 
 To solve the Fredholm integral equation of the second kind, we define the following three functions:
 
