@@ -7,6 +7,14 @@ This is a repository for numerical solutions of mathematical equations:
 
 $$ x = y $$
 
+```mathjax
+\sum_{x=0}^n f(x)
+```
+
+```tex
+\sum_{x=0}^n f(x)
+```
+
 To solve the Fredholm integral equation of the second kind, we define the following three functions:
 
 - **BoundFunction:** This module takes the function f as input and as output gives the function f in the interval [a,b] and zero otherwise.
