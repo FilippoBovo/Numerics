@@ -1,25 +1,13 @@
-<!--- Load Prettify for Mathematica syntax highlight-->
-<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
-
 # Lieb-Liniger Equations
 
 This is a repository for numerical solutions of mathematical equations:
 
-$$ x = y $$
-
-```mathjax
-\sum_{x=0}^n f(x)
-```
-
-```tex
-\sum_{x=0}^n f(x)
-```
 
 To solve the Fredholm integral equation of the second kind, we define the following three functions:
 
 - **BoundFunction:** This module takes the function f as input and as output gives the function f in the interval [a,b] and zero otherwise.
 
-	<pre class="prettyprint">
+	```
 	BoundFunction[f_, a_, b_] :=
 		Function[
 			Piecewise[{
@@ -27,11 +15,11 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 				{0., # > b},
 				{f[#], True}}]
 		];
-	</pre>
+	```
 
 - **Fredholm2ndKind:** Gives the numerical solution of the Fredholm equation in the interval [a,b]. This takes as input the extremes of integration a and b, the kernel K(x,y), g(x) and the number, n, of subdivision of the integration interval which is used in the numerical solution. (see this link)
 
-	<pre class="prettyprint">
+	```
 	Options[Fredholm2ndKind] = {Method -> Automatic};
 	Fredholm2ndKind[{a_, b_, k_, g_}, n_?IntegerQ, OptionsPattern[]] :=
 		Block[{step, SI, GI, KMatrix, W, DMatrix, f, deltaX, delta, fI, ftemp},
@@ -49,11 +37,11 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 			fI,
 			BoundFunction[Interpolation[Transpose@{SI, fI}], a, b]];
 		f];
-	</pre>
+	```
 
 - **Fredholm2ndKindOut:**  Gives the numerical solution of the Fredholm equation in the interval [c,d] outside of [a,b].This takes as input the extremes of integration a and b, the kernel K(x,y), g(x), the number, n, of subdivision of the integration interval [a,b] which is used in the numerical solution, the extreme of integration c and d of the interval outside [a,b] and the number of subdivisions of [c,d].
 
-	<pre class="prettyprint">
+	```
 	Fredholm2ndKindOut[{a_, b_, k_, g_}, n_?IntegerQ, {c_, d_}, m_?IntegerQ, fIni_: True] :=
 		Block[{fInTempi, stepIn, SIni, stepOut, SOuti, GOuti, KMatrixOut, fOuti},
 		(* Variable inside the interval [a,b] *)
@@ -69,6 +57,6 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 		KMatrixOut = Outer[k, SOuti, SIni]; (*Matrix form of k*)
 		fOuti = GOuti + stepIn*(KMatrixOut.fInTempi - (KMatrixOut[[All, 1]]*fInTempi[[1]] + KMatrixOut[[All, n + 1]]*fInTempi[[n + 1]])/2);
 		BoundFunction[Interpolation[Transpose[{SOuti, fOuti}]], c, d]];
-	</pre>
+	```
 
 
