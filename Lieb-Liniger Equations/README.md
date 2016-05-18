@@ -12,6 +12,7 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 
 - **BoundFunction:** This module takes the function f as input and as output gives the function f in the interval [a,b] and zero otherwise.
 
+	<?prettify?>
 	<pre class="prettyprint">
 	BoundFunction[f_, a_, b_] :=
 		Function[
