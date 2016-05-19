@@ -1,6 +1,6 @@
-# Yang-Yang Equations
+# Numerical Solutions of Yang-Yang Equations
 
-C. N. Yang and C. P. Yang in 1969 published an exact analysis of the thermodynamics of an interacting Bose gas:
+Chen N. Yang and Chen P. Yang in 1969 published an exact analysis of the thermodynamics of an interacting Bose gas:
 
 - [C. N. Yang and C. P. Yang, J. Math. Phys. 10, 1115 (1969)](http://dx.doi.org/10.1063/1.1664947)
 
@@ -116,7 +116,7 @@ PlotDOSComparision[-1.5, 1.5, 1.]
 PlotDOSComparision[-1.5, 1.5, 1.4]
 ```
 
-This gives the density of states for three different values of λ:
+This gives the density of states for three different values of λ,
 
 <p align="center">
 	<img src="Resources/DOS.gif">

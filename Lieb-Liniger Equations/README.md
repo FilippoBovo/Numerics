@@ -1,4 +1,4 @@
-# Lieb-Liniger Equations
+# Numerical Solutions of Lieb-Liniger Equations
 
 Elliott H. Lieb and Werner Liniger in 1963 published an exact analysis of an interacting Bose gas:
 
