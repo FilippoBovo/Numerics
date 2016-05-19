@@ -1,6 +1,6 @@
 # Lieb-Liniger Equations
 
-Elliott H. Lieb and Werner Liniger in 1963 published an exact analysis of an interacting Bose sas:
+Elliott H. Lieb and Werner Liniger in 1963 published an exact analysis of an interacting Bose gas:
 
 - [E. Lieb and W. Liniger, Phys. Rev. 130, 1605 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1605)
 - [E. Lieb, Phys. Rev. 130, 1616 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1616)
