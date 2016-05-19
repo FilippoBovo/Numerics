@@ -24,7 +24,7 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 - **Fredholm2ndKind:** Gives the numerical solution of a Fredholm equation of the second kind in the interval *[a,b]*,
 
 	<p align="center">
-		<img src="Resources/Fredholm2ndKind.png" style="height: 20pt;">
+		<img src="Resources/Fredholm2ndKind.png">
 	</p>
 
 	This takes as input the extremes of integration a and b, the kernel *K(x,y)*, *g(x)* and the number, *n*, of subdivision of the integration interval which is used in the numerical solution. This method is a [numerical adaptation](http://mathematica.stackexchange.com/questions/11594/integral-equation-numerical-solution-with-ndsolve) of [S. Rahbar and E. Hashemizadeh, *A Computational Approach to the Fredholm Integral Equation of the Second Kind*, Proceedings of the World Congress on Engineering, 2008](http://www.iaeng.org/publication/WCE2008/WCE2008_pp933-937.pdf).
