@@ -18,7 +18,7 @@ and
 
 where *λ* is the contact interaction strength, *m* is the chemical potential and *t* is the temperature. All quantities are in dimensionless units. The relations to the quantities in dimensional units are in Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf).
 
-The Mathematica notebook of the numerical solution is [available in this repository](Yang-Yang Equations.nb).
+The Mathematica notebook of the numerical solution is [available in this repository](Yang-Yang Equations.nb), where in addition we evaluate the response of the DOS to a change in the chemical potential, *m*.
 
 ## Recursive Solution of Spectrum Equation
 
@@ -67,49 +67,57 @@ gYY[\[Mu]_, t_, \[Lambda]_, a_, b_, n_, precision_] := Block[{eYYDiscrete, eYYfu
 
 ## Plots
 
-Finally, we plot the solutions of the spectrum and density of states.
+In the following we plot the solutions of the spectrum and density of states.
 
 ### Spectrum
 
 ```
-PlotSpectrum[a_, b_] := 
-  Block[{eLLfunction1, eLLfunction2, eLLfunction3},
+PlotSpectrumComparision[a_, b_, t_] := Block[{eYYDiscrete1, eYYfunction1, eYYDiscrete2, eYYfunction2, eYYDiscrete3, eYYfunction3},
 
-	(* Lieb-Liniger *)
-	eLLfunction1 = eSolve[0.01, a, b];
-	eLLfunction2 = eSolve[0.1, a, b];
-	eLLfunction3 = eSolve[1, a, b];
+	(* Yang-Yang *)
+	eYYDiscrete1 = eYY[m, t, 0.01, a, b, n, N[1/n]];
+	eYYfunction1 = Interpolation[Transpose[{Table[i, {i, a, b, (b - a)/(n - 1)}], eYYDiscrete1}]];
+	eYYDiscrete2 = eYY[m, t, 0.1, a, b, n, N[1/n]];
+	eYYfunction2 = Interpolation[Transpose[{Table[i, {i, a, b, (b - a)/(n - 1)}], eYYDiscrete2}]];
+	eYYDiscrete3 = eYY[m, t, 1., a, b, n, N[1/n]];
+	eYYfunction3 = Interpolation[Transpose[{Table[i, {i, a, b, (b - a)/(n - 1)}], eYYDiscrete3}]];
 
 	(* Plot *)
-	Plot[{eLLfunction1[x], eLLfunction2[x], eLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
+	Plot[{eYYfunction1[x], eYYfunction2[x], eYYfunction3[x]}, {x, a, b}, PlotRange -> {-35., 5.}, AxesLabel -> {"x"}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}, PlotLabel -> "t = " <> ToString[t], ImageSize -> Large]];
 
-PlotSpectrum[-1.5, 1.5]
+PlotSpectrumComparision[-1.5, 1.5, 0.1]
+PlotSpectrumComparision[-1.5, 1.5, 1]
+PlotSpectrumComparision[-1.5, 1.5, 1.4]
 ```
 
-This gives the spectrum for three different values of λ:
+This gives the spectrum for three different values of λ,
 
 <p align="center">
 	<img src="Resources/Spectrum.gif">
 </p>
 
+and we combined the three pictures at different temperatures *t* in a gif.
+
 ### Density of States
 
 ```
-PlotDOS[a_, b_] := Block[{gLLfunction1, gLLfunction2, gLLfunction3},
+PlotDOSComparision[a_, b_, t_] := Block[{gYYfunction1, gYYfunction2, gYYfunction3},
+   (* Yang-Yang *)
+   
+   gYYfunction1 = gYY[m, t, 0.01, a, b, n, N[1/n]];
+   gYYfunction2 = gYY[m, t, 0.1, a, b, n, N[1/n]];
+   gYYfunction3 = gYY[m, t, 1., a, b, n, N[1/n]];
+   (* Plot *)
+   
+	Plot[{gYYfunction1[x], gYYfunction2[x], gYYfunction3[x]}, {x, a, b}, 	PlotRange -> {.0, 17.}, Exclusions -> None, AxesLabel -> {"x"}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}, PlotLabel -> "t = " <> ToString[t], ImageSize -> Large]];
 
-	(* Lieb-Liniger *)
-	gLLfunction1 = gSolve[0.01];
-	gLLfunction2 = gSolve[0.1];
-	gLLfunction3 = gSolve[1];
-	
-	(* Plot *)
-	Plot[{gLLfunction1[x], gLLfunction2[x], gLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
-
-PlotDOS[-1.5, 1.5]
+PlotDOSComparision[-1.5, 1.5, 0.1]
+PlotDOSComparision[-1.5, 1.5, 1.]
+PlotDOSComparision[-1.5, 1.5, 1.4]
 ```
 
 This gives the density of states for three different values of λ:
 
 <p align="center">
-	<img src="Resources/DOS.png">
+	<img src="Resources/DOS.gif">
 </p>
