@@ -1,29 +1,27 @@
 # Lieb-Liniger Equations
 
-This is a repository for numerical solutions of mathematical equations:
-
-Exact Analysis of an Interacting Bose Gas:
+Elliott H. Lieb and Werner Liniger in 1963 published an exact analysis of an interacting Bose sas:
 
 - [E. Lieb and W. Liniger, Phys. Rev. 130, 1605 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1605)
 - [E. Lieb, Phys. Rev. 130, 1616 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1616)
 
-We start by numerically solving the renormalized equation for the density of states (DOS) (see Eq. (LL3.18)),
+They found that the density of states (DOS) and spectrum satisfy respectively these equations:
 
 <p align="center">
 	<img src="Resources/LiebLinigerDOS.png">
 </p>
 
-The renormalized equation for the spectrum is (see Eq. (YY33))
+and
 
 <p align="center">
 	<img src="Resources/LiebLinigerSpectrum.png">
 </p>
 
-In this case we can use the same kernel of g(x).
+where, following Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf), we put them in dimensionless unit in order to solve them numerically. These two equations are Fredholm Integral Equations of the Second Kind, and we see how to solve them in the next section.
 
 ## Fredholm Equation
 
-To solve the Fredholm integral equation of the second kind, we define the following three functions:
+To solve Fredholm Integral Equations of the Second Kind, we define the following three functions:
 
 - **BoundFunction:** This module takes the function *f* as input and as output gives the function *f* in the interval *[a,b]* and zero otherwise.
 
@@ -89,6 +87,8 @@ To solve the Fredholm integral equation of the second kind, we define the follow
 
 ## Numerical Solutions
 
+With the above definitions we solve the two equations:
+
 ```
 m = 0.5; (*Renormalized chemical potential*)
 n = 1000; (*number of discretization*)
@@ -125,31 +125,49 @@ eSolve[\[Lambda]_, a_, b_] :=
 
 ## Plots
 
-### Spectrum
-
-```
-PlotSpectrum[a_, b_, \[Lambda]_, t_] := 
-  Block[{eLLfunction},
-	
-   (* Lieb-Liniger *)
-   eLLfunction = eSolve[\[Lambda], a, b];
-   
-   (* Plot *)
-   Plot[eLLfunction[x], {x, a, b}, Exclusions -> None, PlotLegends -> {"LL"}]];
-
-PlotSpectrum[-1.5, 1.5, 0.01, 0.01]
-```
+Finally, we plot the solutions of the density of states and spectrum.
 
 ### Density of States
 
 ```
-PlotDOS[a_, b_, \[Lambda]_, t_] := Block[{gLLfunction},
-	
+PlotDOS[a_, b_] := Block[{gLLfunction1, gLLfunction2, gLLfunction3},
+
 	(* Lieb-Liniger *)
-	gLLfunction = gSolve[\[Lambda]];
+	gLLfunction1 = gSolve[0.01];
+	gLLfunction2 = gSolve[0.1];
+	gLLfunction3 = gSolve[1];
 	
 	(* Plot *)
-	Plot[gLLfunction[x], {x, a, b}, Exclusions -> None, PlotLegends -> {"LL"}]];
+	Plot[{gLLfunction1[x], gLLfunction2[x], gLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
 
-PlotDOS[-1.5, 1.5, 0.01, 0.01]
+PlotDOS[-1.5, 1.5]
 ```
+
+This gives the density of states for three different values of λ:
+
+<p align="center">
+	<img src="Resources/DOS.png">
+</p>
+
+### Spectrum
+
+```
+PlotSpectrum[a_, b_] := 
+  Block[{eLLfunction1, eLLfunction2, eLLfunction3},
+
+	(* Lieb-Liniger *)
+	eLLfunction1 = eSolve[0.01, a, b];
+	eLLfunction2 = eSolve[0.1, a, b];
+	eLLfunction3 = eSolve[1, a, b];
+
+	(* Plot *)
+	Plot[{eLLfunction1[x], eLLfunction2[x], eLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
+
+PlotSpectrum[-1.5, 1.5]
+```
+
+This gives the spectrum for three different values of λ:
+
+<p align="center">
+	<img src="Resources/Spectrum.png">
+</p>
