@@ -2,8 +2,24 @@
 
 This is a repository for numerical solutions of mathematical equations:
 
+Exact Analysis of an Interacting Bose Gas:
 
+- [E. Lieb and W. Liniger, Phys. Rev. 130, 1605 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1605)
+- [E. Lieb, Phys. Rev. 130, 1616 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1616)
 
+We start by numerically solving the renormalized equation for the density of states (DOS) (see Eq. (LL3.18)),
+
+<p align="center">
+	<img src="Resources/LiebLinigerDOS.png">
+</p>
+
+The renormalized equation for the spectrum is (see Eq. (YY33))
+
+<p align="center">
+	<img src="Resources/LiebLinigerSpectrum.png">
+</p>
+
+In this case we can use the same kernel of g(x).
 
 ## Fredholm Equation
 
