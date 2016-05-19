@@ -1,155 +1,73 @@
-# Lieb-Liniger Equations
+# Yang-Yang Equations
 
-Elliott H. Lieb and Werner Liniger in 1963 published an exact analysis of an interacting Bose gas:
+C. N. Yang and C. P. Yang in 1969 published an exact analysis of the thermodynamics of an interacting Bose gas:
 
-- [E. Lieb and W. Liniger, Phys. Rev. 130, 1605 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1605)
-- [E. Lieb, Phys. Rev. 130, 1616 (1963)](http://dx.doi.org/10.1103/PhysRev.130.1616)
+- [C. N. Yang and C. P. Yang, J. Math. Phys. 10, 1115 (1969)](http://dx.doi.org/10.1063/1.1664947)
 
-They found that the density of states (DOS) and spectrum satisfy respectively these equations:
+They found that the spectrum and the density of states (DOS) satisfy respectively these equations:
 
 <p align="center">
-	<img src="Resources/LiebLinigerDOS.png">
+	<img src="Resources/YangYangSpectrum.png">
 </p>
 
 and
 
 <p align="center">
-	<img src="Resources/LiebLinigerSpectrum.png">
+	<img src="Resources/YangYangDOS.png">
 </p>
 
-where, following Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf), we put them in dimensionless unit in order to solve them numerically. These two equations are Fredholm Integral Equations of the Second Kind, and we see how to solve them in the next section.
+where *λ* is the contact interaction strength, *m* is the chemical potential and *t* is the temperature. All quantities are in dimensionless units. The relations to the quantities in dimensional units are in Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf).
 
-The Mathematica notebook of the numerical solution is [available in this repository](Lieb-Liniger Equations.nb).
+The Mathematica notebook of the numerical solution is [available in this repository](Yang-Yang Equations.nb).
 
-## Fredholm Equation
+## Recursive Solution of Spectrum Equation
 
-To solve Fredholm Integral Equations of the Second Kind, we define the following three functions:
-
-- **BoundFunction:** This module takes the function *f* as input and as output gives the function *f* in the interval *[a,b]* and zero otherwise.
-
-	```
-	BoundFunction[f_, a_, b_] :=
-		Function[
-			Piecewise[{
-				{0., # < a},
-				{0., # > b},
-				{f[#], True}}]
-		];
-	```
-
-- **Fredholm2ndKind:** Gives the numerical solution of a Fredholm equation of the second kind in the interval *[a,b]*,
-
-	<p align="center">
-		<img src="Resources/Fredholm2ndKind.png">
-	</p>
-	
-	This takes as input the extremes of integration a and b, the kernel *K(x,y)*, *g(x)* and the number, *n*, of subdivision of the integration interval which is used in the numerical solution. This method is a [numerical adaptation](http://mathematica.stackexchange.com/questions/11594/integral-equation-numerical-solution-with-ndsolve) of [S. Rahbar and E. Hashemizadeh, *A Computational Approach to the Fredholm Integral Equation of the Second Kind*, Proceedings of the World Congress on Engineering, 2008](http://www.iaeng.org/publication/WCE2008/WCE2008_pp933-937.pdf).
-
-	```
-	Options[Fredholm2ndKind] = {Method -> Automatic};
-	Fredholm2ndKind[{a_, b_, k_, g_}, n_?IntegerQ, OptionsPattern[]] :=
-		Block[{step, SI, GI, KMatrix, W, DMatrix, f, deltaX, delta, fI, ftemp},
-    	step = (b - a)/n;
-		SI = Range[a, b, step];
-		GI = g /@ SI;
-		KMatrix = Outer[k, SI, SI];
-		W = {step/2}~Join~ConstantArray[step, n - 1]~Join~{step/2};
-		DMatrix = DiagonalMatrix[W];
-		deltaX[x_?NumericQ] := 
-		W.(k[x, #] & /@ SI) - NIntegrate[k[x, y], {y, a, b}]; 
-		delta = deltaX /@ SI;
-		fI = LinearSolve[IdentityMatrix[n + 1] + (DiagonalMatrix[delta] - KMatrix.DMatrix), GI];
-		f = If[OptionValue[Method] === NoInterpolation,
-			fI,
-			BoundFunction[Interpolation[Transpose@{SI, fI}], a, b]];
-		f];
-	```
-
-- **Fredholm2ndKindOut:**  Gives the numerical solution of the Fredholm equation in the interval *[c,d]* outside of *[a,b]*.This takes as input the extremes of integration *a* and *b*, the kernel *K(x,y)*, *g(x)*, the number, *n*, of subdivision of the integration interval *[a,b]* which is used in the numerical solution, the extreme of integration *c* and *d* of the interval outside *[a,b]* and the number of subdivisions of *[c,d]*.
-
-	```
-	Fredholm2ndKindOut[{a_, b_, k_, g_}, n_?IntegerQ, {c_, d_}, m_?IntegerQ, fIni_: True] :=
-		Block[{fInTempi, stepIn, SIni, stepOut, SOuti, GOuti, KMatrixOut, fOuti},
-		
-		(* Variable inside the interval [a,b] *)
-		stepIn = (b - a)/n;
-		SIni = Range[a, b, stepIn]; (*i-th component of the interval*)
-		fInTempi = If[fIni === True,
-			Fredholm2ndKind[{a, b, k, g}, n, Method -> NoInterpolation],
-			fIni];
-		
-		(* Variable and functions outside the interval [a,b] *)
-		stepOut = (d - c)/m;
-		SOuti = Range[c, d, stepOut]; (*i-th component of the interval*)
-		GOuti = g /@ SOuti; (*i-th component of the g*)
-		KMatrixOut = Outer[k, SOuti, SIni]; (*Matrix form of k*)
-		fOuti = GOuti + stepIn*(KMatrixOut.fInTempi - (KMatrixOut[[All, 1]]*fInTempi[[1]] + KMatrixOut[[All, n + 1]]*fInTempi[[n + 1]])/2);
-		BoundFunction[Interpolation[Transpose[{SOuti, fOuti}]], c, d]];
-	```
-
-## Numerical Solutions
-
-With the above definitions we solve the two equations:
+We solve the equation for the spectrum with a recursive procedure, until the solution reaches a defined precision.
 
 ```
-m = 0.5; (*Renormalized chemical potential*)
-n = 1000; (*number of discretization*)
-
-gLL[x_] := 1/(2*Pi);
-
-gSolve[\[Lambda]_] := Block[{KLL, Out},
-  KLL[x_, y_] := \[Lambda]/(Pi*(\[Lambda]^2 + (x - y)^2));
-  Out = Fredholm2ndKind[{-1., 1., KLL, gLL}, n];
-  Out]
-
-eLL[x_] := -m + x^2;
-
-eSolve[\[Lambda]_, a_, b_] := 
-	Module[{KLL, fIni, fIn, fLeft, fRight, Out},
-		
-		KLL[x_, y_] := \[Lambda]/(Pi*(\[Lambda]^2 + (x - y)^2));
-	  
-		fIni = Fredholm2ndKind[{-1., 1., KLL, eLL}, n, Method -> NoInterpolation];
-		fIn = Interpolation[Transpose[{Table[i, {i, -1., 1., 2./n}], fIni}]];
-		fLeft = Fredholm2ndKindOut[{-1., 1., KLL, eLL}, n, {a, -1.}, n, fIni];
-		fRight = Fredholm2ndKindOut[{-1., 1., KLL, eLL}, n, {1., b}, n, fIni];
-	  
-		Function[
-			Piecewise[{
-				{fLeft[#], a <= # < -1.},
-				{fIn[#], -1. <= # <= 1.},
-				{fRight[#], 1. < # <= b},
-				{0., True}}]
-		]
+eYY[\[Mu]_, t_, \[Lambda]_, a_, b_, n_, precision_] :=
+	Block[{step, xi, \[Epsilon]0, \[Epsilon]0i, kc, kci, kT, \[Epsilon]i, \[Epsilon]iprev, converged, \[Epsilon]converged},
 	
-	]
+	converged = 0;
+	step = (b - a)/(n - 1);
+	xi = Range[a, b, step];
+	\[Epsilon]0[k_] := -\[Mu] + k^2;
+	\[Epsilon]0i = \[Epsilon]0 /@ xi;
+	kc[x_, y_] := \[Lambda]/(Pi*(\[Lambda]^2 + (x - y)^2));
+	kci = Outer[kc, xi, xi];
+	kT[\[Epsilon]_] := t*Log[1 + Exp[-\[Epsilon]/t]];
+	\[Epsilon]converged[\[CapitalDelta]\[Epsilon]_] := If[Abs[\[CapitalDelta]\[Epsilon]] < precision, 1, 0];
+	\[Epsilon]i = \[Epsilon]0i;
+	
+	While[converged === 0,
+		\[Epsilon]iprev = \[Epsilon]i;
+		(* Trapezoidal rule sum *)
+		\[Epsilon]i = \[Epsilon]0i - step*(kci.(kT /@ \[Epsilon]iprev) - (kci[[All, 1]]*kT[\[Epsilon]iprev[[1]]] + kci[[All, n]]*kT[\[Epsilon]iprev[[n]]])/2); 
+		converged = Times @@ (\[Epsilon]converged /@ (\[Epsilon]iprev -\[Epsilon]i));
+	];
+	
+	\[Epsilon]i]
+```
+
+## DOS equation: Fredholm approach
+
+The equation for the density of states can be casted as a Fredholm Equation of the Second Kind. Using [this numerical approach](../Lieb-Liniger%20Equations) we solve it in the following way:
+
+```
+gYY[\[Mu]_, t_, \[Lambda]_, a_, b_, n_, precision_] := Block[{eYYDiscrete, eYYfunction, k, g},
+	
+	eYYDiscrete = eYY[\[Mu], t, \[Lambda], a, b, n, precision];
+	eYYfunction = Interpolation[Transpose[{Table[i, {i, a, b, (b - a)/(n - 1)}], eYYDiscrete}]];
+	g[x_] := 1/(2*Pi*(1 + Exp[eYYfunction[x]/t]));
+	k[x_, y_] := 1/(1 + Exp[eYYfunction[x]/t])*\[Lambda]/(Pi*(\[Lambda]^2 + (x - y)^2));
+	
+	Fredholm2ndKind[{a, b, k, g}, n]
+	];
 ```
 
 ## Plots
 
-Finally, we plot the solutions of the density of states and spectrum.
-
-### Density of States
-
-```
-PlotDOS[a_, b_] := Block[{gLLfunction1, gLLfunction2, gLLfunction3},
-
-	(* Lieb-Liniger *)
-	gLLfunction1 = gSolve[0.01];
-	gLLfunction2 = gSolve[0.1];
-	gLLfunction3 = gSolve[1];
-	
-	(* Plot *)
-	Plot[{gLLfunction1[x], gLLfunction2[x], gLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
-
-PlotDOS[-1.5, 1.5]
-```
-
-This gives the density of states for three different values of λ:
-
-<p align="center">
-	<img src="Resources/DOS.png">
-</p>
+Finally, we plot the solutions of the spectrum and density of states.
 
 ### Spectrum
 
@@ -171,5 +89,27 @@ PlotSpectrum[-1.5, 1.5]
 This gives the spectrum for three different values of λ:
 
 <p align="center">
-	<img src="Resources/Spectrum.png">
+	<img src="Resources/Spectrum.gif">
+</p>
+
+### Density of States
+
+```
+PlotDOS[a_, b_] := Block[{gLLfunction1, gLLfunction2, gLLfunction3},
+
+	(* Lieb-Liniger *)
+	gLLfunction1 = gSolve[0.01];
+	gLLfunction2 = gSolve[0.1];
+	gLLfunction3 = gSolve[1];
+	
+	(* Plot *)
+	Plot[{gLLfunction1[x], gLLfunction2[x], gLLfunction3[x]}, {x, a, b}, Exclusions -> None, PlotLegends -> {0.01, 0.1, 1}]];
+
+PlotDOS[-1.5, 1.5]
+```
+
+This gives the density of states for three different values of λ:
+
+<p align="center">
+	<img src="Resources/DOS.png">
 </p>

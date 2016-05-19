@@ -17,7 +17,7 @@ and
 	<img src="Resources/LiebLinigerSpectrum.png">
 </p>
 
-where, following Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf), we put them in dimensionless unit in order to solve them numerically. These two equations are Fredholm Integral Equations of the Second Kind, and we see how to solve them in the next section.
+where, following Section 3.8 of [my PhD thesis](http://etheses.bham.ac.uk/6320/1/Bovo15PhD.pdf), we put them in dimensionless unit in order to solve them numerically.  Here *λ* is the contact interaction strength and *m* is the chemical potential. These two equations are Fredholm Integral Equations of the Second Kind, and we see how to solve them in the next section.
 
 The Mathematica notebook of the numerical solution is [available in this repository](Lieb-Liniger Equations.nb).
 
